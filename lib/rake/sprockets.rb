@@ -47,6 +47,20 @@ module Rake
         @sprockets ||= create_sprockets_env
       end
 
+      def filename(file)
+        asset = sprockets[file]
+
+        if env.production?
+          asset.digest_path
+        else
+          asset.logical_path
+        end
+      end
+
+      def url(file)
+        "/assets/#{filename(file)}"
+      end
+
       def create_sprockets_env
         ::Sprockets::Environment.new(root) do |s_env|
           s_env.logger = logger
@@ -65,14 +79,13 @@ module Rake
       def compile
         public_assets.mkpath
         precompile.each do |file|
-          assets = sprockets.find_asset file
-          filename = public_assets.join file
-          assets.write_to filename
+          public_filename = public_assets.join filename(file)
+          sprockets[file].write_to public_filename
         end
       end
 
       def clean
-        public_assets.rmtree
+        public_assets.rmtree if public_assets.exist?
       end
     end
   end

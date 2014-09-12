@@ -1,8 +1,9 @@
 class EyString < String
   def method_missing(name, *args, &blk)
     sname = name.to_s
-    if sname =~ /\?$/
-      self == sname
+    regex = /\?$/
+    if sname =~ regex
+      self == sname.gsub(regex, '')
     else
       super
     end

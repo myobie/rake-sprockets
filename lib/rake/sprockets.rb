@@ -63,11 +63,10 @@ module Rake
       end
 
       def compile
+        public_assets.mkpath
         precompile.each do |file|
           assets = sprockets.find_asset file
-          prefix, basename = assets.pathname.to_s.split("/")[-2..-1]
-          public_assets.join(prefix).mkpath
-          filename = public_assets.join prefix, basename
+          filename = public_assets.join file
           assets.write_to filename
         end
       end
